@@ -13,7 +13,8 @@ DBT_TEST_MMM_DB.RAW.RAW_GUILD_RANKING_JSON
 DBT_TEST_MMM_DB.STAGING.stg_player_ranking
 DBT_TEST_MMM_DB.STAGING.stg_guild_ranking
   ↓ dbt mart table
-DBT_TEST_MMM_DB.MARTS.mart_top_players_latest
+DBT_TEST_MMM_DB.MARTS.mart_player_ranking_latest
+DBT_TEST_MMM_DB.MARTS.mart_guild_ranking_latest
 ```
 
 ## RAW
@@ -45,6 +46,6 @@ RAW テーブルは JSON を再処理できるように、加工を最小限に�
 
 ## marts
 
-`mart_top_players_latest` は最新 `collected_at` のランキング行だけを保持する分析用テーブルです。最小構成では intermediate 層は作らず、差分分析や player dimension は後続で追加します。
+mart 層は、分析で直接使いやすい latest / profile / history / summary のテーブルを作成します。dbt の `description` は Snowflake の table / column comment として反映します。
 
 dbt の schema naming は `dbt/macros/generate_schema_name.sql` で上書きし、`STAGING` と `MARTS` に直接モデルを作成します。

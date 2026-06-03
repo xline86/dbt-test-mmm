@@ -1,35 +1,312 @@
 version: 2
 
 models:
-  - name: mart_top_players_latest
-    description: Latest player ranking rows across all ranking types.
+  - name: mart_player_ranking_latest
+    description: 各ワールド・ランキング種別ごとの最新プレイヤーランキング。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - world_id
+              - ranking_type
+              - rank_position
     columns:
-      - name: collected_at
-        tests:
-          - not_null
       - name: world_id
+        description: ワールドID。
         tests:
           - not_null
       - name: ranking_type
+        description: ランキング種別。
         tests:
           - not_null
           - accepted_values:
               arguments:
-                values:
-                  - bp
-                  - rank
-                  - quest
-                  - tower
-                  - tower_red
-                  - tower_green
-                  - tower_blue
-                  - tower_yellow
+                values: [bp, rank, quest, tower, tower_red, tower_green, tower_blue, tower_yellow]
       - name: rank_position
+        description: ランキング順位。
         tests:
           - not_null
       - name: player_id
+        description: プレイヤーID。
+        tests:
+          - not_null
+      - name: player_name
+        description: プレイヤー名。
+      - name: score_value
+        description: ランキング種別に対応するスコア。
+        tests:
+          - not_null
+      - name: guild_bp_ranking_position
+        description: 同じ収集日時における所属ギルドのBPランキング順位。
+      - name: collected_at
+        description: データ収集日時。
+        tests:
+          - not_null
+      - name: source_file
+        description: 元JSONファイル名。
+
+  - name: mart_top_player_profile_latest
+    description: 最新のプレイヤープロフィール。ランキングに登場したプレイヤーのみを含む。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - world_id
+              - player_id
+    columns:
+      - name: world_id
+        description: ワールドID。
+        tests:
+          - not_null
+      - name: player_id
+        description: プレイヤーID。
+        tests:
+          - not_null
+      - name: player_name
+        description: プレイヤー名。
+      - name: current_bp
+        description: 現在のBP。
+      - name: player_rank
+        description: 現在のプレイヤーランク。
+      - name: quest_id
+        description: 現在のクエスト進捗ID。
+      - name: tower_id
+        description: 現在の塔進捗ID。
+      - name: guild_id
+        description: 所属ギルドID。
+      - name: guild_name
+        description: 所属ギルド名。
+      - name: guild_position
+        description: ギルド内役職。
+      - name: prev_legend_league_class
+        description: 前回のレジェンドリーグクラス。
+      - name: collected_at
+        description: データ収集日時。
+        tests:
+          - not_null
+
+  - name: mart_guild_ranking_latest
+    description: 各ワールド・ランキング種別ごとの最新ギルドランキング。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - world_id
+              - ranking_type
+              - rank_position
+    columns:
+      - name: world_id
+        description: ワールドID。
+        tests:
+          - not_null
+      - name: ranking_type
+        description: ランキング種別。
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [bp, level, stock]
+      - name: rank_position
+        description: ランキング順位。
+        tests:
+          - not_null
+      - name: guild_id
+        description: ギルドID。
+        tests:
+          - not_null
+      - name: guild_name
+        description: ギルド名。
+      - name: score_value
+        description: ランキング種別に対応するスコア。
+        tests:
+          - not_null
+      - name: collected_at
+        description: データ収集日時。
+        tests:
+          - not_null
+
+  - name: mart_guild_profile_latest
+    description: 最新のギルドプロフィール。
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - world_id
+              - guild_id
+    columns:
+      - name: world_id
+        description: ワールドID。
+        tests:
+          - not_null
+      - name: guild_id
+        description: ギルドID。
+        tests:
+          - not_null
+      - name: guild_name
+        description: ギルド名。
+      - name: bp
+        description: ギルドBP。
+      - name: guild_level
+        description: ギルドレベル。
+      - name: stock
+        description: ギルドストック。
+      - name: exp
+        description: ギルド経験値。
+      - name: num_members
+        description: ギルドメンバー数。
+      - name: leader_id
+        description: リーダーID。
+      - name: leader_name
+        description: リーダー名。
+      - name: free_join
+        description: 自由加入可否。
+      - name: bp_requirement
+        description: 加入に必要なBP。
+      - name: bp_ranker_num
+        description: 同じ収集日時にBPランキングへ登場した所属プレイヤー数。
+      - name: bp_top_player_name
+        description: 同じ収集日時にBPランキングで最上位だった所属プレイヤー名。
+      - name: bp_top_player_id
+        description: 同じ収集日時にBPランキングで最上位だった所属プレイヤーID。
+      - name: bp_top_player_bp
+        description: 同じ収集日時にBPランキングで最上位だった所属プレイヤーのBP。
+      - name: collected_at
+        description: データ収集日時。
+        tests:
+          - not_null
+
+  - name: mart_player_ranking_history
+    description: プレイヤーごとのランキング履歴。
+    columns:
+      - name: world_id
+        description: ワールドID。
+        tests:
+          - not_null
+      - name: player_id
+        description: プレイヤーID。
+        tests:
+          - not_null
+      - name: player_name
+        description: プレイヤー名。
+      - name: ranking_type
+        description: ランキング種別。
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [bp, rank, quest, tower, tower_red, tower_green, tower_blue, tower_yellow]
+      - name: collected_at
+        description: データ収集日時。
+        tests:
+          - not_null
+      - name: rank_position
+        description: ランキング順位。
         tests:
           - not_null
       - name: score_value
+        description: ランキング種別に対応するスコア。
         tests:
           - not_null
+      - name: source_file
+        description: 元JSONファイル名。
+
+  - name: mart_guild_ranking_history
+    description: ギルドランキングの履歴。
+    columns:
+      - name: world_id
+        description: ワールドID。
+        tests:
+          - not_null
+      - name: guild_id
+        description: ギルドID。
+        tests:
+          - not_null
+      - name: guild_name
+        description: ギルド名。
+      - name: ranking_type
+        description: ランキング種別。
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [bp, level, stock]
+      - name: collected_at
+        description: データ収集日時。
+        tests:
+          - not_null
+      - name: rank_position
+        description: ランキング順位。
+        tests:
+          - not_null
+      - name: score_value
+        description: ランキング種別に対応するスコア。
+        tests:
+          - not_null
+      - name: source_file
+        description: 元JSONファイル名。
+
+  - name: mart_world_player_ranking_summary
+    description: ワールド単位のプレイヤーランキング概要。
+    columns:
+      - name: world_id
+        description: ワールドID。
+        tests:
+          - not_null
+      - name: collected_at
+        description: データ収集日時。
+        tests:
+          - not_null
+      - name: ranking_type
+        description: ランキング種別。
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [bp, rank, quest, tower, tower_red, tower_green, tower_blue, tower_yellow]
+      - name: entry_count
+        description: ランキング行数。
+      - name: top_player_id
+        description: 1位のプレイヤーID。
+      - name: top_player_name
+        description: 1位のプレイヤー名。
+      - name: top_score_value
+        description: 1位のスコア。
+      - name: bottom_rank_position
+        description: 最下位の順位。
+      - name: bottom_score_value
+        description: 最下位のスコア。
+      - name: avg_score_value
+        description: 平均スコア。
+
+  - name: mart_world_guild_ranking_summary
+    description: ワールド単位のギルドランキング概要。
+    columns:
+      - name: world_id
+        description: ワールドID。
+        tests:
+          - not_null
+      - name: collected_at
+        description: データ収集日時。
+        tests:
+          - not_null
+      - name: ranking_type
+        description: ランキング種別。
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [bp, level, stock]
+      - name: entry_count
+        description: ランキング行数。
+      - name: top_guild_id
+        description: 1位のギルドID。
+      - name: top_guild_name
+        description: 1位のギルド名。
+      - name: top_score_value
+        description: 1位のスコア。
+      - name: bottom_rank_position
+        description: 最下位の順位。
+      - name: bottom_score_value
+        description: 最下位のスコア。
+      - name: avg_score_value
+        description: 平均スコア。
