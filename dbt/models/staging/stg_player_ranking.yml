@@ -36,3 +36,31 @@ models:
       - name: score_value
         tests:
           - not_null
+  - name: stg_player_info
+    description: Player details normalized from raw player_ranking JSON into one row per player.
+    columns:
+      - name: collected_at
+        tests:
+          - not_null
+      - name: source_file
+        tests:
+          - not_null
+      - name: world_id
+        tests:
+          - not_null
+      - name: player_id
+        tests:
+          - not_null
+      - name: player_name
+        tests:
+          - not_null
+      - name: current_bp
+      - name: player_rank
+      - name: quest_id
+      - name: tower_id
+      - name: icon_id
+      - name: guild_id
+      - name: guild_name
+      - name: guild_join_time
+      - name: guild_position
+      - name: prev_legend_league_class

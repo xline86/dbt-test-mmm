@@ -34,3 +34,32 @@ models:
       - name: score_value
         tests:
           - not_null
+  - name: stg_guild_info
+    description: Guild details normalized from raw guild_ranking JSON into one row per guild.
+    columns:
+      - name: collected_at
+        tests:
+          - not_null
+      - name: source_file
+        tests:
+          - not_null
+      - name: world_id
+        tests:
+          - not_null
+      - name: guild_id
+        tests:
+          - not_null
+      - name: guild_name
+        tests:
+          - not_null
+      - name: bp
+      - name: guild_level
+      - name: stock
+      - name: exp
+      - name: num_members
+      - name: leader_id
+      - name: leader_name
+      - name: policy
+      - name: description
+      - name: free_join
+      - name: bp_requirement
