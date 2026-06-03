@@ -8,7 +8,7 @@ LOAD_ARGS ?= --limit 1
 SNOWFLAKE_ADMIN_CONNECTION ?= CONN_ADMIN
 SNOWFLAKE_DEV_CONNECTION ?= CONN_MMM
 
-.PHONY: setup-admin setup setup-all load dbt-debug dbt-build test lint typecheck check
+.PHONY: setup-admin setup setup-all put copy load dbt-debug dbt-build test lint typecheck check
 
 setup-admin:
 	@set -eu; \
@@ -25,8 +25,13 @@ setup-all:
 	$(MAKE) setup-admin
 	$(MAKE) setup
 
-load:
-	$(UV) run dbt-test load-raw $(LOAD_ARGS)
+put:
+	$(UV) run dbt-test put-raw $(LOAD_ARGS)
+
+copy:
+	$(UV) run snow sql -c $(SNOWFLAKE_DEV_CONNECTION) -f scripts/copy_raw_rankings.sql
+
+load: put copy
 
 dbt-debug:
 	DBT_PROFILES_DIR=$(DBT_PROFILES_DIR) $(UV) run dbt debug --project-dir dbt

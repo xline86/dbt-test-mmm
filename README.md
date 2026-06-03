@@ -1,8 +1,8 @@
 # dbt-test
 
-Snowflake 無料トライアルと dbt Core で、ゲームの `player_ranking` JSON を RAW にロードし、dbt でランキング分析用の最小 mart を作る学習用プロジェクトです。
+Snowflake 無料トライアルと dbt Core で、ゲームの ranking JSON を RAW にロードし、dbt でランキング分析用の最小 mart を作る学習用プロジェクトです。
 
-データ構造の詳細は [docs/player_rankingデータ構造.md](docs/player_rankingデータ構造.md) を参照してください。`data/` は git 管理しません。
+データ構造の詳細は [docs/player_rankingデータ構造.md](docs/player_rankingデータ構造.md) と [docs/guild_rankingデータ構造.md](docs/guild_rankingデータ構造.md) を参照してください。`data/` は git 管理しません。
 
 ## セットアップ
 
@@ -21,7 +21,7 @@ cp config/profiles.yml.example config/profiles.yml
 # Snowflake オブジェクト作成
 make setup
 
-# 最新 JSON 1 件を RAW にロード
+# player/guild の最新 JSON 1 件ずつを stage に PUT して RAW に COPY
 make load
 
 # dbt 接続確認
@@ -34,10 +34,17 @@ make dbt-build
 make check
 ```
 
-`make load` はデフォルトで最新 1 件のみロードします。全件ロードする場合は次のように実行します。
+`make load` はデフォルトで player/guild の最新 1 件ずつをロードします。全件ロードする場合は次のように実行します。
 
 ```sh
 make load LOAD_ARGS=
+```
+
+PUT と COPY は個別にも実行できます。
+
+```sh
+make put LOAD_ARGS="--dataset player_ranking --limit 1"
+make copy
 ```
 
 ## 構成

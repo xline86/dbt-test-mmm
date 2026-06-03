@@ -3,18 +3,22 @@
 このプロジェクトは、ローカル JSON を Snowflake RAW にロードし、dbt で staging と marts を作る最小構成です。
 
 ```
-data/player_ranking/*.json
-  ↓ Python loader
+data/player_ranking/*.json, data/guild_ranking/*.json
+  ↓ Python PUT
+DBT_TEST_MMM_DB.RAW.MMM_RANKING_STAGE
+  ↓ COPY INTO
 DBT_TEST_MMM_DB.RAW.RAW_PLAYER_RANKING_JSON
+DBT_TEST_MMM_DB.RAW.RAW_GUILD_RANKING_JSON
   ↓ dbt staging view
 DBT_TEST_MMM_DB.STAGING.stg_player_ranking
+DBT_TEST_MMM_DB.STAGING.stg_guild_ranking
   ↓ dbt mart table
 DBT_TEST_MMM_DB.MARTS.mart_top_players_latest
 ```
 
 ## RAW
 
-RAW テーブルは JSON を再処理できるように、加工を最小限にします。
+RAW テーブルは JSON を再処理できるように、加工を最小限にします。内部 stage は `raw.mmm_ranking_stage` を 1 つだけ使い、`data/player_ranking/` と `data/guild_ranking/` の path で分けます。
 
 | column         | type            | note                       |
 | -------------- | --------------- | -------------------------- |
@@ -25,7 +29,7 @@ RAW テーブルは JSON を再処理できるように、加工を最小限に�
 
 ## staging
 
-`stg_player_ranking` は `rankings` 配下のランキング配列を縦持ちに展開します。
+`stg_player_ranking` と `stg_guild_ranking` は `rankings` 配下のランキング配列を縦持ちに展開します。
 
 主なカラム:
 
@@ -33,11 +37,11 @@ RAW テーブルは JSON を再処理できるように、加工を最小限に�
 - `world_id`
 - `ranking_type`
 - `rank_position`
-- `player_id`
-- `player_name`
+- `player_id` / `guild_id`
+- `player_name` / `guild_name`
 - `score_value`
 
-`score_value` はランキング種別に応じて `bp`, `rank`, `quest_id`, `tower_id` の値を入れます。
+`score_value` はランキング種別に応じて `bp`, `rank`, `quest_id`, `tower_id`, `level`, `stock` の値を入れます。
 
 ## marts
 

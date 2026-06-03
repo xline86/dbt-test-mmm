@@ -21,3 +21,19 @@ sources:
           - name: raw_payload
             tests:
               - not_null
+      - name: raw_guild_ranking_json
+        identifier: RAW_GUILD_RANKING_JSON
+        description: Raw guild ranking JSON loaded from data/guild_ranking.
+        columns:
+          - name: loaded_at
+            tests:
+              - not_null
+          - name: collected_at
+            tests:
+              - not_null
+          - name: source_file
+            tests:
+              - not_null
+          - name: raw_payload
+            tests:
+              - not_null

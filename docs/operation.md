@@ -34,7 +34,7 @@ SNOWFLAKE_DEV_CONNECTION=CONN_MMM
 Snowflake のセットアップは 2 段階に分けます。
 
 - `make setup-admin`: `ACCOUNTADMIN` を持つ接続で、role / warehouse / database / developer user / grants を作成する
-- `make setup`: 開発者ユーザー `mmm` の接続で、`raw` / `staging` / `marts` schema と RAW table を作成する
+- `make setup`: 開発者ユーザー `mmm` の接続で、schema / RAW table / file format / internal stage を作成する
 
 `setup_snowflake_by_admin.sql` は公開鍵を直書きしません。`make setup-admin` は `.env` の `SNOWFLAKE_PUBLIC_KEY_PATH` から mmm ユーザー用の公開鍵ファイルを読み、SQL テンプレート変数 `dbt_user_rsa_public_key` に渡します。
 
@@ -64,22 +64,30 @@ make setup-admin SNOWFLAKE_PUBLIC_KEY_PATH=/home/you/.ssh/snowflake_rsa_key.pub
 
 作成される Snowflake オブジェクト:
 - `scripts/setup_snowflake_by_admin.sql`: `dbt_test_mmm_role` / `dbt_test_mmm_wh` / `dbt_test_mmm_db` / user `mmm`
-- `scripts/setup_snowflake.sql`: `raw` / `staging` / `marts` schema と `raw.raw_player_ranking_json`
+- `scripts/setup_snowflake.sql`: `raw` / `staging` / `marts` schema、`raw.mmm_ranking_stage`、`raw.ranking_json_file_format`、RAW table
 
 管理者側では database ownership を `dbt_test_mmm_role` へ付与します。開発者側で作成した schema/table も同じロールが所有します。
 
 ## 4. RAW ロード
 
-最新 1 件だけロードします。
+player/guild の最新 1 件ずつをロードします。Python は `raw.mmm_ranking_stage` へ PUT し、SQL は RAW table へ COPY します。
 
 ```sh
 make load
 ```
 
-ファイルを指定してロードします。
+PUT と COPY を分けて実行できます。
 
 ```sh
-uv run dbt-test load-raw --file data/player_ranking/2026-03-18_1.json
+make put LOAD_ARGS="--dataset player_ranking --limit 1"
+make copy
+```
+
+ファイルを指定して PUT します。`make copy` は別途実行します。
+
+```sh
+uv run dbt-test put-raw --file data/player_ranking/2026-03-18_1.json
+make copy
 ```
 
 全件ロードします。

@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: stg_guild_ranking
+    description: Ranking entries expanded from raw guild_ranking JSON into one row per guild and ranking type.
+    columns:
+      - name: collected_at
+        tests:
+          - not_null
+      - name: source_file
+        tests:
+          - not_null
+      - name: world_id
+        tests:
+          - not_null
+      - name: ranking_type
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - bp
+                  - level
+                  - stock
+      - name: rank_position
+        tests:
+          - not_null
+      - name: guild_id
+        tests:
+          - not_null
+      - name: guild_name
+        tests:
+          - not_null
+      - name: score_value
+        tests:
+          - not_null
