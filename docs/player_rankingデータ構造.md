@@ -1,3 +1,4 @@
+# player_ranking データ構造
 
 `data/player_ranking`にはプレイヤーのランキング情報が記述されている
 ランキング(rankings)は次の8種類
