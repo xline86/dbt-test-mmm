@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: mart_top_players_latest
+    description: Latest player ranking rows across all ranking types.
+    columns:
+      - name: collected_at
+        tests:
+          - not_null
+      - name: world_id
+        tests:
+          - not_null
+      - name: ranking_type
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - bp
+                  - rank
+                  - quest
+                  - tower
+                  - tower_red
+                  - tower_green
+                  - tower_blue
+                  - tower_yellow
+      - name: rank_position
+        tests:
+          - not_null
+      - name: player_id
+        tests:
+          - not_null
+      - name: score_value
+        tests:
+          - not_null

@@ -1,0 +1,23 @@
+version: 2
+
+sources:
+  - name: raw
+    database: "{{ env_var('SNOWFLAKE_DATABASE', 'DBT_TEST_MMM_DB') }}"
+    schema: RAW
+    tables:
+      - name: raw_player_ranking_json
+        identifier: RAW_PLAYER_RANKING_JSON
+        description: Raw player ranking JSON loaded from data/player_ranking.
+        columns:
+          - name: loaded_at
+            tests:
+              - not_null
+          - name: collected_at
+            tests:
+              - not_null
+          - name: source_file
+            tests:
+              - not_null
+          - name: raw_payload
+            tests:
+              - not_null

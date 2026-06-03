@@ -8,3 +8,22 @@ wheels/
 
 # Virtual environments
 .venv
+
+data/
+
+# Local secrets
+.env
+config/profiles.yml
+config/.user.yml
+
+# dbt artifacts
+target/
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+logs/
+
+# Python tooling
+.pytest_cache/
+.ruff_cache/
+.coverage

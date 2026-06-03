@@ -1,0 +1,15 @@
+dbt_test_mmm:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', 'your_account') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', 'your_user') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'DBT_TEST_MMM_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'DBT_TEST_MMM_WH') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'DBT_TEST_MMM_DB') }}"
+      schema: MARTS
+      private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH', '/path/to/snowflake_rsa_key.p8') }}"
+      private_key_passphrase: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PASSPHRASE', '') }}"
+      threads: 4
+      client_session_keep_alive: false
