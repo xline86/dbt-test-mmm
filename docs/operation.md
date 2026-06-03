@@ -4,7 +4,10 @@
 
 ```sh
 uv sync
+DBT_PROFILES_DIR=config uv run dbt deps --project-dir dbt
 ```
+
+`dbt deps` は `dbt/packages.yml` に定義した dbt package を取得します。このプロジェクトでは `dbt_utils` を generic test で使います。
 
 ## 2. Snowflake 接続設定
 
@@ -102,6 +105,8 @@ make load LOAD_ARGS=
 make dbt-debug
 make dbt-build
 ```
+
+mart 層では `persist_docs` を有効にしています。`marts.yml` の `description` は Snowflake の table / column comment として反映されます。
 
 `config/profiles.yml` はローカル用設定ファイルです。秘密情報は `.env` に置き、git 管理しないでください。
 

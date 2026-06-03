@@ -12,6 +12,8 @@ DBT_TEST_MMM_DB.RAW.RAW_GUILD_RANKING_JSON
   ↓ dbt staging view
 DBT_TEST_MMM_DB.STAGING.stg_player_ranking
 DBT_TEST_MMM_DB.STAGING.stg_guild_ranking
+DBT_TEST_MMM_DB.STAGING.stg_player_info
+DBT_TEST_MMM_DB.STAGING.stg_guild_info
   ↓ dbt mart table
 DBT_TEST_MMM_DB.MARTS.mart_player_ranking_latest
 DBT_TEST_MMM_DB.MARTS.mart_guild_ranking_latest
@@ -47,5 +49,16 @@ RAW テーブルは JSON を再処理できるように、加工を最小限に�
 ## marts
 
 mart 層は、分析で直接使いやすい latest / profile / history / summary のテーブルを作成します。dbt の `description` は Snowflake の table / column comment として反映します。
+
+- `mart_player_ranking_latest`: 各ワールド・ランキング種別ごとの最新プレイヤーランキング
+- `mart_top_player_profile_latest`: 最新のプレイヤープロフィール。ランキングに登場したプレイヤーのみを含む
+- `mart_guild_ranking_latest`: 各ワールド・ランキング種別ごとの最新ギルドランキング
+- `mart_guild_profile_latest`: 最新のギルドプロフィール。同じ収集日時の player BP ランキング情報も付与する
+- `mart_player_ranking_history`: プレイヤーランキング履歴
+- `mart_guild_ranking_history`: ギルドランキング履歴
+- `mart_world_player_ranking_summary`: ワールド単位のプレイヤーランキング概要
+- `mart_world_guild_ranking_summary`: ワールド単位のギルドランキング概要
+
+latest 系は `row_number()` で最新行を選びます。player と guild の情報を結合する場合は、同じ `world_id` と `collected_at` のデータだけを使います。
 
 dbt の schema naming は `dbt/macros/generate_schema_name.sql` で上書きし、`STAGING` と `MARTS` に直接モデルを作成します。
