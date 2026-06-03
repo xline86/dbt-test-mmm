@@ -53,13 +53,27 @@ def build_insert_sql(config: SnowflakeConfig) -> str:
     """
 
 
+def build_loaded_source_file_sql(config: SnowflakeConfig) -> str:
+    return f"""
+        select 1
+        from {config.raw_table}
+        where source_file = %s
+        limit 1
+    """
+
+
 def load_files(config: SnowflakeConfig, files: Sequence[Path]) -> int:
     insert_sql = build_insert_sql(config)
+    loaded_source_file_sql = build_loaded_source_file_sql(config)
 
     loaded_count = 0
     with snowflake.connector.connect(**config.connection_kwargs()) as connection:
         with connection.cursor() as cursor:
             for file_path in files:
+                cursor.execute(loaded_source_file_sql, (file_path.name,))
+                if cursor.fetchone() is not None:
+                    continue
+
                 collected_at, payload_text = read_payload(file_path)
                 cursor.execute(insert_sql, (collected_at, file_path.name, payload_text))
                 loaded_count += 1
