@@ -1,3 +1,11 @@
+{{
+    config(
+        materialized='incremental',
+        incremental_strategy='merge',
+        unique_key=['source_file', 'world_id', 'ranking_type', 'player_id']
+    )
+}}
+
 select
     world_id,
     player_id,
@@ -7,4 +15,10 @@ select
     rank_position,
     score_value,
     source_file
-from {{ ref('stg_player_ranking') }}
+from {{ ref('stg_player_ranking_all') }}
+
+{% if is_incremental() %}
+where source_file not in (
+    select distinct source_file from {{ this }}
+)
+{% endif %}
