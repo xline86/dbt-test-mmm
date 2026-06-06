@@ -2,7 +2,8 @@
 
 Snowflake 無料トライアルと dbt Core で、ゲームの ranking JSON を RAW にロードし、dbt でランキング分析用の最小 mart を作る学習用プロジェクトです。
 
-データ構造の詳細は [docs/player_rankingデータ構造.md](docs/player_rankingデータ構造.md) と [docs/guild_rankingデータ構造.md](docs/guild_rankingデータ構造.md) を参照してください。`data/` は git 管理しません。
+対象のゲームは「メメントモリ」であり、ランキングはapi「メンテもりもり(`https://mentemori.icu/`)」で公開されています。
+このプロジェクトで多用している`mmm`は「メンテもりもり」から取りました。
 
 ## セットアップ
 

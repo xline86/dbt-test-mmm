@@ -8,7 +8,7 @@ LOAD_ARGS ?= --limit 1
 SNOWFLAKE_ADMIN_CONNECTION ?= CONN_ADMIN
 SNOWFLAKE_DEV_CONNECTION ?= CONN_MMM
 
-.PHONY: setup-admin setup setup-all put copy load dbt-debug dbt-build test lint typecheck check
+.PHONY: setup-admin setup setup-all put put-all copy-into load dbt-debug dbt-build test lint typecheck check
 
 setup-admin:
 	@set -eu; \
@@ -28,10 +28,14 @@ setup-all:
 put:
 	$(UV) run dbt-test put-raw $(LOAD_ARGS)
 
-copy:
+put-all:
+	$(UV) run snow sql -c $(SNOWFLAKE_DEV_CONNECTION) -q "put 'file://$(CURDIR)/data/player_ranking/*.json' @raw.mmm_ranking_stage/data/player_ranking auto_compress=false overwrite=false"
+	$(UV) run snow sql -c $(SNOWFLAKE_DEV_CONNECTION) -q "put 'file://$(CURDIR)/data/guild_ranking/*.json' @raw.mmm_ranking_stage/data/guild_ranking auto_compress=false overwrite=false"
+
+copy-into:
 	$(UV) run snow sql -c $(SNOWFLAKE_DEV_CONNECTION) -f scripts/copy_raw_rankings.sql
 
-load: put copy
+load: put copy-into
 
 dbt-debug:
 	DBT_PROFILES_DIR=$(DBT_PROFILES_DIR) $(UV) run dbt debug --project-dir dbt
