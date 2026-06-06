@@ -1,10 +1,12 @@
-with raw_rankings as (
+with {{ latest_raw_files('raw_player_ranking_json') }},
+
+raw_rankings as (
     select
         collected_at,
         source_file,
-        raw_payload:data:world_id::number as world_id,
+        world_id,
         raw_payload:data:rankings as rankings
-    from {{ source('raw', 'raw_player_ranking_json') }}
+    from latest_raw_files
 ),
 
 bp as (

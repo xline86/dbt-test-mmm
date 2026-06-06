@@ -1,10 +1,12 @@
-with raw_guild_info as (
+with {{ latest_raw_files('raw_guild_ranking_json') }},
+
+raw_guild_info as (
     select
         collected_at,
         source_file,
-        raw_payload:data:world_id::number as world_id,
+        world_id,
         raw_payload:data:guild_info as guild_info
-    from {{ source('raw', 'raw_guild_ranking_json') }}
+    from latest_raw_files
 )
 
 select

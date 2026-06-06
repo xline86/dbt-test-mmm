@@ -40,3 +40,5 @@ target-version = "py313"
 [tool.pyright]
 typeCheckingMode = "standard"
 pythonVersion = "3.13"
+venvPath = "."
+venv = ".venv"
