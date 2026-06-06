@@ -83,21 +83,24 @@ PUT と COPY を分けて実行できます。
 
 ```sh
 make put LOAD_ARGS="--dataset player_ranking --limit 1"
-make copy
+make copy-into
 ```
 
-ファイルを指定して PUT します。`make copy` は別途実行します。
+ファイルを指定して PUT します。`make copy-into` は別途実行します。
 
 ```sh
 uv run dbt-test put-raw --file data/player_ranking/2026-03-18_1.json
-make copy
+make copy-into
 ```
 
-全件ロードします。
+全件を stage に PUT します。`put-all` は Snowflake CLI の `PUT` をワイルドカードで実行し、player/guild それぞれ 1 回ずつ PUT します。
 
 ```sh
-make load LOAD_ARGS=
+make put-all
+make copy-into
 ```
+
+`make load LOAD_ARGS=` でも全件 PUT はできますが、ファイルごとに Python CLI から PUT を実行します。数百ファイルをまとめて扱う場合は `make put-all` を使います。
 
 ## 5. dbt 実行
 
@@ -107,6 +110,14 @@ make dbt-build
 ```
 
 mart 層では `persist_docs` を有効にしています。`marts.yml` の `description` は Snowflake の table / column comment として反映されます。
+
+`mart_player_ranking_history` と `mart_guild_ranking_history` は incremental model です。初回作成や作り直しは `--full-refresh` を付けて実行します。
+
+```sh
+DBT_PROFILES_DIR=config uv run dbt build --project-dir dbt --full-refresh --select mart_player_ranking_history mart_guild_ranking_history
+```
+
+通常の `make dbt-build` では、history mart は未登録の `source_file` だけを増分で取り込みます。
 
 `config/profiles.yml` はローカル用設定ファイルです。秘密情報は `.env` に置き、git 管理しないでください。
 

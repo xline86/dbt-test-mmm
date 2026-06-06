@@ -4,7 +4,7 @@
 
 ```
 data/player_ranking/*.json, data/guild_ranking/*.json
-  ↓ Python PUT
+  ↓ Python PUT / Snowflake CLI PUT
 DBT_TEST_MMM_DB.RAW.MMM_RANKING_STAGE
   ↓ COPY INTO
 DBT_TEST_MMM_DB.RAW.RAW_PLAYER_RANKING_JSON
@@ -14,9 +14,13 @@ DBT_TEST_MMM_DB.STAGING.stg_player_ranking
 DBT_TEST_MMM_DB.STAGING.stg_guild_ranking
 DBT_TEST_MMM_DB.STAGING.stg_player_info
 DBT_TEST_MMM_DB.STAGING.stg_guild_info
+DBT_TEST_MMM_DB.STAGING.stg_player_ranking_all
+DBT_TEST_MMM_DB.STAGING.stg_guild_ranking_all
   ↓ dbt mart table
 DBT_TEST_MMM_DB.MARTS.mart_player_ranking_latest
 DBT_TEST_MMM_DB.MARTS.mart_guild_ranking_latest
+DBT_TEST_MMM_DB.MARTS.mart_player_ranking_history
+DBT_TEST_MMM_DB.MARTS.mart_guild_ranking_history
 ```
 
 ## RAW
@@ -34,7 +38,9 @@ RAW テーブルは JSON を再処理できるように、加工を最小限に�
 
 `stg_player_ranking` と `stg_guild_ranking` は `rankings` 配下のランキング配列を縦持ちに展開します。
 
-RAW に同じ日付のファイルが複数ある場合、staging ではファイル名末尾のサフィックスが最大のファイルだけを使います。例えば `2025-02-20_1.json` と `2025-02-20_2.json` がある場合、`_2` を代表データとして扱います。RAW には全ファイルを残します。
+RAW に同じ日付のファイルが複数ある場合、`stg_player_ranking` / `stg_guild_ranking` / `stg_player_info` / `stg_guild_info` ではファイル名末尾のサフィックスが最大のファイルだけを使います。例えば `2025-02-20_1.json` と `2025-02-20_2.json` がある場合、`_2` を代表データとして扱います。RAW には全ファイルを残します。
+
+history mart 用には、代表ファイルに絞らない `stg_player_ranking_all` と `stg_guild_ranking_all` を使います。この 2 つは RAW の全ファイルを展開します。
 
 主なカラム:
 
@@ -62,5 +68,7 @@ mart 層は、分析で直接使いやすい latest / profile / history / summar
 - `mart_world_guild_ranking_summary`: ワールド単位のギルドランキング概要
 
 latest 系は `row_number()` で最新行を選びます。player と guild の情報を結合する場合は、同じ `world_id` と `collected_at` のデータだけを使います。
+
+history 系の `mart_player_ranking_history` と `mart_guild_ranking_history` は dbt incremental model です。増分実行時は、mart に未登録の `source_file` だけを `stg_player_ranking_all` / `stg_guild_ranking_all` から取り込みます。作り直す場合は dbt の `--full-refresh` を使います。
 
 dbt の schema naming は `dbt/macros/generate_schema_name.sql` で上書きし、`STAGING` と `MARTS` に直接モデルを作成します。

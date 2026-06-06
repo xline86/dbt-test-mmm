@@ -35,17 +35,18 @@ make dbt-build
 make check
 ```
 
-`make load` はデフォルトで player/guild の最新 1 件ずつをロードします。全件ロードする場合は次のように実行します。
+`make load` はデフォルトで player/guild の最新 1 件ずつをロードします。全件をまとめて PUT する場合は次のように実行します。
 
 ```sh
-make load LOAD_ARGS=
+make put-all
+make copy-into
 ```
 
 PUT と COPY は個別にも実行できます。
 
 ```sh
 make put LOAD_ARGS="--dataset player_ranking --limit 1"
-make copy
+make copy-into
 ```
 
 ## 構成
